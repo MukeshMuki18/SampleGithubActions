@@ -1,0 +1,24 @@
+on:
+  workflow_dispatch:
+    inputs:
+      PromotionRequired:
+        description: 'Promotion required or not'
+        required: true
+        type: Boolean
+
+      Countries:
+        description: 'To check the options'
+        type: choice
+        options:
+        - Sweden
+        - Denmark
+        - UK
+        - US
+jobs:
+  log-the-inputs:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo "PromtionRequired : ${{ github.event.inputs.PromtionRequired }}"
+        echo "Countries: ${{ github.event.inputs.Countries }} "
+

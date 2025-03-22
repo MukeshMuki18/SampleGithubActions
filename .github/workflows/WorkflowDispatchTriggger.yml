@@ -3,8 +3,8 @@ on:
     inputs:
       PromotionRequired:
         description: 'Promotion required or not'
+        type: boolean
         required: true
-        type: Boolean
 
       Countries:
         description: 'To check the options'

@@ -1,11 +1,11 @@
-name: Issue Opened Trigger
+name: Auto Close Issue on Success
 
 on:
   issues:
     types: [opened]  # Triggers when a new issue is opened
 
 jobs:
-  issue_trigger:
+  process_issue:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,3 +16,9 @@ jobs:
           echo "Issue Title: ${{ github.event.issue.title }}"
           echo "Issue Body: ${{ github.event.issue.body }}"
           echo "Opened by: ${{ github.event.issue.user.login }}"
+
+      - name: Close the issue if workflow succeeds
+        run: |
+          gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

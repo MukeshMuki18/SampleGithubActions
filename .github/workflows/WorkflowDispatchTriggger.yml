@@ -1,8 +1,48 @@
 on:
   workflow_dispatch:
     inputs:
-      PromotionRequired:
-        description: 'Promotion required or not'
+      PromotionRequired1:
+        description: 'Promotion required1 or not'
+        type: boolean
+        required: true
+      PromotionRequired2:
+        description: 'Promotion required2 or not'
+        type: boolean
+        required: true
+      PromotionRequire3:
+        description: 'Promotion required3 or not'
+        type: boolean
+        required: true
+      PromotionRequired4:
+        description: 'Promotion required4 or not'
+        type: boolean
+        required: true
+      PromotionRequired5:
+        description: 'Promotion required5 or not'
+        type: boolean
+        required: true
+      PromotionRequired6:
+        description: 'Promotion required6 or not'
+        type: boolean
+        required: true
+      PromotionRequired7:
+        description: 'Promotion required7 or not'
+        type: boolean
+        required: true
+      PromotionRequired8:
+        description: 'Promotion required8 or not'
+        type: boolean
+        required: true
+      PromotionRequired9:
+        description: 'Promotion required9 or not'
+        type: boolean
+        required: true
+      PromotionRequired10:
+        description: 'Promotion required10 or not'
+        type: boolean
+        required: true
+      PromotionRequired11:
+        description: 'Promotion required11 or not'
         type: boolean
         required: true
 
@@ -19,6 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo "PromtionRequired : ${{ github.event.inputs.PromotionRequired }}"
+        echo "PromtionRequired : ${{ github.event.inputs.PromotionRequired7 }}"
         echo "Countries: ${{ github.event.inputs.Countries }} "
 

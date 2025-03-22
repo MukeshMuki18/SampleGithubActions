@@ -19,6 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo "PromtionRequired : ${{ github.event.inputs.PromtionRequired }}"
+        echo "PromtionRequired : ${{ github.event.inputs.PromotionRequired }}"
         echo "Countries: ${{ github.event.inputs.Countries }} "
 

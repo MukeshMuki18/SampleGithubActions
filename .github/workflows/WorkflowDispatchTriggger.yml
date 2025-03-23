@@ -16,7 +16,7 @@ on:
         - US
 jobs:
   log-the-inputs:
-    runs-on: ubuntu-latest
+    runs-on: TestRunnerGithub
     steps:
     - run: |
         echo "PromtionRequired : ${{ github.event.inputs.PromotionRequired }}"

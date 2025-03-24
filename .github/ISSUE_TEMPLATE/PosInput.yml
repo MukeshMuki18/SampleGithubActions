@@ -1,0 +1,40 @@
+name: "POS API input"
+description: "Issue to trigger the API"
+title: "[POS API Input] - "
+labels: ["pos-api-input"]
+body:
+  - type: input
+    id: season
+    attributes:
+      label: "Season"
+      description: "Enter Season"
+      placeholder: "e.g., 201206"
+    validations:
+      required: true
+      
+  - type: input
+    id: department
+    attributes:
+      label: "Department"
+      description: "Enter your Department"
+      placeholder: "e.g., 6190"
+    validations:
+      required: true
+
+  - type: input
+    id: articleCount
+    attributes:
+      label: "ArticleCount"
+      description: "Enter no.of article required"
+      placeholder: "e.g., 100"
+    validations:
+      required: true
+
+  - type: input
+    id: promotion
+    attributes:
+      label: "promotion"
+      description: "Promotion required(1) or not(1) "
+      placeholder: "e.g., enter either 1 or 0 "
+    validations:
+      required: true

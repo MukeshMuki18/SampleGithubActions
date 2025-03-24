@@ -19,11 +19,12 @@ jobs:
       - name: Extract Inputs
         id: extract
         run: |
-          USERNAME=$(echo "${{ github.event.issue.body }}" | sed -n 's/^### Username\s*\*\*\*\*\s*//p' | xargs)
-          GMAIL=$(echo "${{ github.event.issue.body }}" | sed -n 's/^### Gmail\s*\*\*\*\*\s*//p' | xargs)
+          USERNAME=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Username/{getline; print}' | xargs)
+          GMAIL=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Gmail/{getline; print}' | xargs)
           ABOVE_18=$(echo "${{ github.event.issue.body }}" | grep -q "Yes, I confirm that I am above 18." && echo "Yes" || echo "No")
-          GENDER=$(echo "${{ github.event.issue.body }}" | sed -n 's/^### Select your gender\s*\*\*\*\*\s*//p' | xargs)
+          GENDER=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Select your gender/{getline; print}' | xargs)
 
+          echo "Extracted Values:"
           echo "Username: $USERNAME"
           echo "Gmail: $GMAIL"
           echo "Above 18: $ABOVE_18"
@@ -40,7 +41,7 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           comment: |
             ✅ User Registration processed successfully.
-            
+
             **Username:** ${{ env.USERNAME }}  
             **Gmail:** ${{ env.GMAIL }}  
             **Above 18:** ${{ env.ABOVE_18 }}  

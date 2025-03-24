@@ -1,0 +1,29 @@
+name: POS Execution
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-user:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract issue details
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          echo "Processing Issues details..."
+          echo "Issue Content:"
+          echo "$ISSUE_BODY"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Extract Season
+        id: regex-match-season
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.event.issue.body }}
+          regex: '### Season\s+(\w+)'
+
+      - name: Set Season
+        run: echo "SEASON=${{ steps.regex-match-season.outputs.group1 }}" >> $GITHUB_ENV

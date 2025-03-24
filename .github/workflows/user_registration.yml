@@ -49,7 +49,7 @@ jobs:
           regex: 'Gender\s+- (Male|Female)'
 
       - name: Set gender
-        run: echo "GENDER=${{ steps.regex-match-for-gender.group1 }}" >> $GITHUB_ENV
+        run: echo "GENDER=${{ steps.regex-match-gender.group1 }}" >> $GITHUB_ENV
 
       - name: Extract Above 18 Confirmation
         id: regex-match-above-18

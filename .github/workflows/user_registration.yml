@@ -31,14 +31,14 @@ jobs:
         
         #  get and set the gmail
       - name: Extract Gmail
-        id: regex-match-for-gamil
+        id: regex-match-for-gmail
         uses: actions-ecosystem/action-regex-match@v2
         with:
           text: ${{ github.event.issue.body }}
           regex: '### Gmail\s+(\w+)'
 
       - name: Set Gmail
-        run: echo "GMAIL=${{ steps.regex-match.outputs.group1 }}" >> $GITHUB_ENV
+        run: echo "GMAIL=${{ steps.regex-match-for-gmail.outputs.group1 }}" >> $GITHUB_ENV
       
       #  get and set the age
       - name: Extract Gender
@@ -49,7 +49,7 @@ jobs:
           regex: '### Select your gender\s+(\w+)'
 
       - name: Set gender
-        run: echo "GENDER=${{ steps.regex-match.outputs.group1 }}" >> $GITHUB_ENV
+        run: echo "GENDER=${{ steps.regex-match-for-gender.group1 }}" >> $GITHUB_ENV
         
       # - name: Extract Inputs
       #   id: extract

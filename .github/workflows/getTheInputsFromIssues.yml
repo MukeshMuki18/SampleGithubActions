@@ -58,5 +58,10 @@ jobs:
       - name: Set Promotion
         run: echo "PROMOTION=${{ steps.regex-match-promotion.outputs.group1 }}" >> $GITHUB_ENV
 
+      - name: Close the issue if workflow succeeds
+        run: |
+          gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
         

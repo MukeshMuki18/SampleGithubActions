@@ -1,0 +1,76 @@
+name: POS Execution
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-user:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Extract issue details
+      env:
+        ISSUE_BODY: ${{ github.event.issue.body }}
+      run: |
+        echo "Processing Issues details..."
+        echo "Issue Content:"
+        echo "$ISSUE_BODY"
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Extract Season
+      id: extract-season
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueBody = context.payload.issue.body;
+          const seasonMatch = issueBody.match(/### Season\s+(\w+)/);
+          return { season: seasonMatch ? seasonMatch[1] : 'Not specified' };
+
+    - name: Extract Department
+      id: extract-department
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueBody = context.payload.issue.body;
+          const departmentMatch = issueBody.match(/### Department\s+(\w+)/);
+          return { department: departmentMatch ? departmentMatch[1] : 'Not specified' };
+
+    - name: Extract ArticleCount
+      id: extract-articleCount
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueBody = context.payload.issue.body;
+          const articleCountMatch = issueBody.match(/### ArticleCount\s+(\w+)/);
+          return { articleCount: articleCountMatch ? articleCountMatch[1] : 'Not specified' };
+
+    - name: Extract Promotion
+      id: extract-promotion
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueBody = context.payload.issue.body;
+          const promotionMatch = issueBody.match(/### promotion\s+(\w+)/);
+          return { promotion: promotionMatch ? promotionMatch[1] : 'Not specified' };
+
+    - name: Set Season
+      run: echo "Season:${{ steps.extract-season.outputs.season }}" >> inputs.txt
+
+    - name: Set Department
+      run: echo "Department:${{ steps.extract-department.outputs.department }}" >> inputs.txt
+
+    - name: Set ArticleCount
+      run: echo "ArticleCount:${{ steps.extract-articleCount.outputs.articleCount }}" >> inputs.txt
+
+    - name: Set Promotion
+      run: echo "Promotion:${{ steps.extract-promotion.outputs.promotion }}" >> inputs.txt
+
+    
+    - name: Close the issue if workflow succeeds
+      run: |
+        gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

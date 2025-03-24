@@ -57,16 +57,16 @@ jobs:
           return { promotion: promotionMatch ? promotionMatch[1] : 'Not specified' };
 
     - name: Set Season
-      run: echo "Season:${{ steps.extract-season.outputs.season }}" >> inputs.txt
+      run: echo "Season:${{ steps.extract-season.outputs.season }}" >> $GITHUB_ENV
 
     - name: Set Department
-      run: echo "Department:${{ steps.extract-department.outputs.department }}" >> inputs.txt
+      run: echo "Department:${{ steps.extract-department.outputs.department }}" >> $GITHUB_ENV
 
     - name: Set ArticleCount
-      run: echo "ArticleCount:${{ steps.extract-articleCount.outputs.articleCount }}" >> inputs.txt
+      run: echo "ArticleCount:${{ steps.extract-articleCount.outputs.articleCount }}" >> $GITHUB_ENV
 
     - name: Set Promotion
-      run: echo "Promotion:${{ steps.extract-promotion.outputs.promotion }}" >> inputs.txt
+      run: echo "Promotion:${{ steps.extract-promotion.outputs.promotion }}" >> $GITHUB_ENV
 
     
     - name: Close the issue if workflow succeeds

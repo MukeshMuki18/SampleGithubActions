@@ -42,15 +42,23 @@ jobs:
       
       #  get and set the Gender
       - name: Extract Gender
-        id: regex-match-for-gender
+        id: regex-match-gender
         uses: actions-ecosystem/action-regex-match@v2
         with:
           text: ${{ github.event.issue.body }}
-          regex: '### Gender\s+(\w+)'
+          regex: 'Gender\s+- (Male|Female)'
 
       - name: Set gender
         run: echo "GENDER=${{ steps.regex-match-for-gender.group1 }}" >> $GITHUB_ENV
-        
+
+      - name: Extract Above 18 Confirmation
+        id: regex-match-above-18
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.event.issue.body }}
+          regex: 'Are you above 18\?\s+- \[ \] Yes, I confirm that I am above 18.'
+      - name: Set Above 18 Confirmation
+        run: echo "ABOVE_18=${{ steps.regex-match-above-18.outputs.group0 }}" >> $GITHUB_ENV
       # - name: Extract Inputs
       #   id: extract
       #   run: |

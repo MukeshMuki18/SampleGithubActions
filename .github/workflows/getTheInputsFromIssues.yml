@@ -25,5 +25,38 @@ jobs:
           text: ${{ github.event.issue.body }}
           regex: '### Season\s+(\w+)'
 
+      - name: Extract Department
+        id: regex-match-department
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.event.issue.body }}
+          regex: '### Department\s+(\w+)'
+
+      - name: Extract ArticleCount
+        id: regex-match-articleCount
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.event.issue.body }}
+          regex: '### ArticleCount\s+(\w+)'
+
+      - name: Extract promotion
+        id: regex-match-promotion
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.event.issue.body }}
+          regex: '### promotion\s+(\w+)'
+
       - name: Set Season
         run: echo "SEASON=${{ steps.regex-match-season.outputs.group1 }}" >> $GITHUB_ENV
+
+      - name: Set Department
+        run: echo "DEPARTMENT=${{ steps.regex-match-department.outputs.group1 }}" >> $GITHUB_ENV
+
+      - name: Set ArticleCount
+        run: echo "ARTICLECOUNT=${{ steps.regex-match-articleCount.outputs.group1 }}" >> $GITHUB_ENV
+
+      - name: Set Promotion
+        run: echo "PROMOTION=${{ steps.regex-match-promotion.outputs.group1 }}" >> $GITHUB_ENV
+
+        
+        

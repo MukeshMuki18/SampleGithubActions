@@ -1,0 +1,41 @@
+name: Process User Registration
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-user:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract issue details
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          echo "Processing User Registration..."
+          echo "Issue Content:"
+          echo "$ISSUE_BODY"
+
+      - name: Extract Inputs
+        id: extract
+        run: |
+          USERNAME=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=### Username\s*\*\*\*\*).*(?=\s*\*\*\*\*)' | xargs)
+          GMAIL=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=### Gmail\s*\*\*\*\*).*(?=\s*\*\*\*\*)' | xargs)
+          ABOVE_18=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=### Are you above 18\?\s*\*\*\*\*).*(?=\s*\*\*\*\*)' | xargs)
+          GENDER=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=### Select your gender\s*\*\*\*\*).*(?=\s*\*\*\*\*)' | xargs)
+
+          echo "Username: $USERNAME"
+          echo "Gmail: $GMAIL"
+          echo "Above 18: $ABOVE_18"
+          echo "Gender: $GENDER"
+
+          echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+          echo "GMAIL=$GMAIL" >> $GITHUB_ENV
+          echo "ABOVE_18=$ABOVE_18" >> $GITHUB_ENV
+          echo "GENDER=$GENDER" >> $GITHUB_ENV
+
+      - name: Close the Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: "User Registration processed successfully. Closing this issue."

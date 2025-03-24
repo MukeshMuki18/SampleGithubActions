@@ -19,10 +19,10 @@ jobs:
       - name: Extract Inputs
         id: extract
         run: |
-          USERNAME=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Username/{getline; print}' | xargs)
-          GMAIL=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Gmail/{getline; print}' | xargs)
+          USERNAME=$(echo "${{ github.event.issue.body }}" | awk -F'\n' '/### Username/{getline; print}' | xargs)
+          GMAIL=$(echo "${{ github.event.issue.body }}" | awk -F'\n' '/### Gmail/{getline; print}' | xargs)
           ABOVE_18=$(echo "${{ github.event.issue.body }}" | grep -q "Yes, I confirm that I am above 18." && echo "Yes" || echo "No")
-          GENDER=$(echo "${{ github.event.issue.body }}" | awk -F'\\n' '/### Select your gender/{getline; print}' | xargs)
+          GENDER=$(echo "${{ github.event.issue.body }}" | awk -F'\n' '/### Select your gender/{getline; print}' | xargs)
 
           echo "Extracted Values:"
           echo "Username: $USERNAME"

@@ -1,8 +1,8 @@
 name: Auto Close Issue on Success
 
 on:
-  issues:
-    types: [opened]  # Triggers when a new issue is opened
+#   issues:
+#     types: [opened]  # Triggers when a new issue is opened
 
 jobs:
   process_issue:

@@ -1,0 +1,40 @@
+name: "User Registration"
+description: "Provide your details to register"
+title: "[User Registration] - "
+labels: ["user-registration"]
+body:
+  - type: input
+    id: username
+    attributes:
+      label: "Username"
+      description: "Enter your username"
+      placeholder: "e.g., johndoe123"
+    validations:
+      required: true
+
+  - type: input
+    id: gmail
+    attributes:
+      label: "Gmail"
+      description: "Enter your Gmail address"
+      placeholder: "e.g., example@gmail.com"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: above_18
+    attributes:
+      label: "Are you above 18?"
+      options:
+        - label: "Yes, I confirm that I am above 18."
+          required: true
+
+  - type: dropdown
+    id: gender
+    attributes:
+      label: "Select your gender"
+      options:
+        - Male
+        - Female
+    validations:
+      required: true

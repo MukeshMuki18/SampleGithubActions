@@ -27,7 +27,7 @@ body:
       label: "Are you above 18?"
       options:
         - label: "Yes, I confirm that I am above 18."
-          required: true
+          
 
   - type: dropdown
     id: gender

@@ -10,17 +10,16 @@ jobs:
     steps:
       - name: Create Issue Data File
         run: |
-          echo "${{ toJson(github.event.issue) }}" > issue_data.json
+          echo "${{ github.event.issue.body }}" > issue_data.txt
 
       - name: Extract and Print Issue Fields using PowerShell
         shell: pwsh
         run: |
-          $json = Get-Content issue_data.json | ConvertFrom-Json
-          $body = $json.body -split "\n"
+          $content = Get-Content issue_data.txt
           
           $fields = @{}
-          foreach ($line in $body) {
-            if ($line -match '^\*\*([^:]+):\*\*\s*(.*)$') {
+          foreach ($line in $content) {
+            if ($line -match '^(\w+):\s*(.*)$') {
               $fields[$matches[1].Trim()] = $matches[2].Trim()
             }
           }

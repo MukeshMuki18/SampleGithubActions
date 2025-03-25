@@ -10,10 +10,8 @@ jobs:
 
     steps:
     - name: Extract issue details
-      env:
-        ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        $string = ${{ github.event.issue.body }}
+        $string = '${{ github.event.issue.body }}'
         Write-Output $string
         $lines = $string -split '`n'
         Write-Output  $lines

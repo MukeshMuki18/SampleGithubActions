@@ -10,22 +10,25 @@ jobs:
     steps:
       - name: Create Issue Data File
         run: |
-          echo "Season=${{ github.event.issue.body }}" > issue_data.txt
-          echo "Department=${{ github.event.issue.body }}" >> issue_data.txt
-          echo "ArticleCount=${{ github.event.issue.body }}" >> issue_data.txt
-          echo "Promotion=${{ github.event.issue.body }}" >> issue_data.txt
+          echo "${{ toJson(github.event.issue) }}" > issue_data.json
 
       - name: Extract and Print Issue Fields using PowerShell
         shell: pwsh
         run: |
-          $content = Get-Content issue_data.txt
-          foreach ($line in $content) {
-            if ($line -match '^(\w+)=(.*)$') {
-              $key = $matches[1]
-              $value = $matches[2]
-              Write-Output "${key}: ${value}"
+          $json = Get-Content issue_data.json | ConvertFrom-Json
+          $body = $json.body -split "\n"
+          
+          $fields = @{}
+          foreach ($line in $body) {
+            if ($line -match '^\*\*([^:]+):\*\*\s*(.*)$') {
+              $fields[$matches[1].Trim()] = $matches[2].Trim()
             }
           }
+          
+          Write-Output "Season: $($fields['Season'])"
+          Write-Output "Department: $($fields['Department'])"
+          Write-Output "ArticleCount: $($fields['ArticleCount'])"
+          Write-Output "Promotion: $($fields['promotion'])"
 
       - name: Close Issue
         uses: peter-evans/close-issue@v3

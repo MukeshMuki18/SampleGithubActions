@@ -7,8 +7,12 @@ on:
 jobs:
   process-user:
     runs-on: ubuntu-latest
-
+    
+ 
     steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+      
     - name: Read and store value
       run: |
         powershell -command "

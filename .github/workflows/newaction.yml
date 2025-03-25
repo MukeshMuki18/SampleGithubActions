@@ -6,7 +6,7 @@ on:
 
 jobs:
   process_issue:
-    runs-on: ubuntu-latest
+    runs-on: pos
     steps:
       - name: Create Issue Data File
         run: |

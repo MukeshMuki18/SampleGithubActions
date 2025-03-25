@@ -13,10 +13,6 @@ jobs:
       env:
         ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        # echo "Processing Issues details..."
-        # echo "Issue Content:"
-        # echo "$ISSUE_BODY" >> inputs.txt
-        # cat inputs.txt
         $string = '${{ github.event.issue.body }}'
         $lines = $string -split '`n'
         echo '$lines'

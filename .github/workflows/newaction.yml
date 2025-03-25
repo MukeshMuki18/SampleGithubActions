@@ -17,6 +17,11 @@ jobs:
         echo "Issue Content:"
         echo "$ISSUE_BODY" >> inputs.txt
         cat inputs.txt
+    - name: Close the issue if workflow succeeds
+      run: |
+        gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Checkout repository
     #   uses: actions/checkout@v2
@@ -72,8 +77,4 @@ jobs:
     #   run: echo "Promotion:${{ steps.extract-promotion.outputs.promotion }}" >> $GITHUB_ENV
 
     
-    - name: Close the issue if workflow succeeds
-      run: |
-        gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    

@@ -16,21 +16,22 @@ jobs:
         echo "Processing Issues details..."
         echo "Issue Content:"
         echo "$ISSUE_BODY" >> inputs.txt
+        cat inputs.txt
 
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    # - name: Checkout repository
+    #   uses: actions/checkout@v2
 
-    - name: Extract Season
-      id: extract-season
-      uses: actions/github-script@v6
-      with:
-        script: |
-          # const issueBody = context.payload.issue.body;
-          const issueBody = ${{ github.event.issue.body }};
-          const seasonMatch = issueBody.match(/### Season\s+(\w+)/);
-          return { season: seasonMatch ? seasonMatch[1] : 'Not specified' };
-    - name: Set Season
-      run: echo "Season:${{ steps.extract-season.outputs.season }}" 
+    # - name: Extract Season
+    #   id: extract-season
+    #   uses: actions/github-script@v6
+    #   with:
+    #     script: |
+    #       # const issueBody = context.payload.issue.body;
+    #       const issueBody = ${{ github.event.issue.body }};
+    #       const seasonMatch = issueBody.match(/### Season\s+(\w+)/);
+    #       return { season: seasonMatch ? seasonMatch[1] : 'Not specified' };
+    # - name: Set Season
+    #   run: echo "Season:${{ steps.extract-season.outputs.season }}" 
 
     # - name: Extract Department
     #   id: extract-department

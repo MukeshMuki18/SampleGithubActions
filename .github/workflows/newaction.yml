@@ -11,10 +11,10 @@ jobs:
     steps:
     - name: Extract issue details
       run: |
-        $string = '${{ github.event.issue.body }}'
-        Write-Output $string
-        $lines = $string -split '`n'
-        Write-Output  $lines
+       
+        Write-Output ${{ github.event.issue.body }}
+        # $lines: ${{ github.event.issue.body }} -split '`n'
+        # Write-Output  $lines
       
     - name: Close the Issue
       uses: peter-evans/close-issue@v3

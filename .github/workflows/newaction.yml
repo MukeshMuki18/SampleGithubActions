@@ -4,28 +4,31 @@ on:
   issues:
     types: [opened]
 
-jobs:
-  process-user:
-    runs-on: ubuntu-latest
-    
- 
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
       
-    - name: Read and store value
-      run: |
-        powershell -command "
-          $string = '### Season`nwwwwwww'
-          $lines = $string -split '`n'
-          $value = $lines[1]
-          Write-Output 'Extracted value: $value'
-        "
-    - name: Close the Issue
-      uses: peter-evans/close-issue@v3
-      with:
-        issue-number: ${{ github.event.issue.number }}
-        comment: |
+jobs:
+  process_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display Issue Information
+        run: |
+          echo "Issue Title: ${{ github.event.issue.title }}"
+          echo "Issue Body: ${{ github.event.issue.body }}"
+          echo "Opened by: ${{ github.event.issue.user.login }}"
+
+      - name: Close the issue if workflow succeeds
+        run: |
+          gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Close the Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: |
              processed successfully.
 
     # - name: Checkout repository

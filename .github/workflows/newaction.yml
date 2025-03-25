@@ -12,7 +12,7 @@ jobs:
     - name: Extract issue details
       run: |
        
-        Write-Output ${{ github.event.issue.body }}
+        echo ${{ github.event.issue.body }}
         # $lines: ${{ github.event.issue.body }} -split '`n'
         # Write-Output  $lines
       

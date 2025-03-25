@@ -26,7 +26,7 @@ jobs:
       with:
         script: |
           const issueBody = context.payload.issue.body;
-          const seasonMatch = issueBody.match(### Season\s+(\w+));
+          const seasonMatch = issueBody.match(/### Season\s+(\w+)/);
           return { season: seasonMatch ? seasonMatch[1] : 'Not specified' };
 
     - name: Extract Department

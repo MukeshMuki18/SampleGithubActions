@@ -1,4 +1,4 @@
-name: POS Execution
+name: POS Execution for copying file
 
 on:
   issues:

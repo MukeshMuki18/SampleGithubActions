@@ -23,7 +23,7 @@ jobs:
             if ($line -match '^(\w+)=(.*)$') {
               $key = $matches[1]
               $value = $matches[2]
-              Write-Output "$key: $value"
+              Write-Output "${key}: ${value}"
             }
           }
 

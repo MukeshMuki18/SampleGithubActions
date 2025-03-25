@@ -14,9 +14,9 @@ jobs:
 
       - name: Display Issue Information
         run: |
-          echo "Issue Title: ${{ github.event.issue.title }}"
-          echo "Issue Body: ${{ github.event.issue.body }}"
-          echo "Opened by: ${{ github.event.issue.user.login }}"
+          echo "Issue Title: ${{ github.event.issue.title }}" 
+          echo "Issue Body: ${{ github.event.issue.body }}"  >>  input.txt
+          echo "Opened by: ${{ github.event.issue.user.login }}"  
 
       - name: Close the issue if workflow succeeds
         run: |

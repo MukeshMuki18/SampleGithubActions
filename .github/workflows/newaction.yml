@@ -19,7 +19,7 @@ jobs:
           
           $fields = @{}
           foreach ($line in $content) {
-            if ($line -match '^(\w+):\s*(.*)$') {
+            if ($line -match '^\*\*(.+?):\*\*\s*(.+)$') {
               $fields[$matches[1].Trim()] = $matches[2].Trim()
             }
           }

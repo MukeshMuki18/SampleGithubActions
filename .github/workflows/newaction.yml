@@ -19,8 +19,9 @@ jobs:
         # cat inputs.txt
         $string = '${{ github.event.issue.body }}'
         $lines = $string -split '`n'
-        $value = $lines[5]
-        Write-Output 'Extracted value: $lines[3],$lines[4],$lines[5],$lines[6],$lines[7]'
+        echo '$lines'
+        # $value = $lines[5]
+        # Write-Output 'Extracted value: $lines[3],$lines[4],$lines[5],$lines[6],$lines[7]'
     - name: Close the Issue
       uses: peter-evans/close-issue@v3
       with:

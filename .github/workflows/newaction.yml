@@ -1,88 +1,34 @@
-name: POS Execution for copying file
+name: Close POS API Issue with Details
 
 on:
   issues:
     types: [opened]
 
-      
 jobs:
   process_issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Display Issue Information
+      - name: Create Issue Data File
         run: |
-          echo "Issue Title: ${{ github.event.issue.title }}" 
-          echo "Issue Body: ${{ github.event.issue.body }}"  >>  input.txt
-          echo "Opened by: ${{ github.event.issue.user.login }}"  
+          echo "Season=${{ github.event.issue.body }}" > issue_data.txt
+          echo "Department=${{ github.event.issue.body }}" >> issue_data.txt
+          echo "ArticleCount=${{ github.event.issue.body }}" >> issue_data.txt
+          echo "Promotion=${{ github.event.issue.body }}" >> issue_data.txt
 
-      - name: Close the issue if workflow succeeds
+      - name: Extract and Print Issue Fields using PowerShell
+        shell: pwsh
         run: |
-          gh issue close ${{ github.event.issue.number }} --reason completed --comment "This issue has been resolved automatically."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-      - name: Close the Issue
+          $content = Get-Content issue_data.txt
+          foreach ($line in $content) {
+            if ($line -match '^(\w+)=(.*)$') {
+              $key = $matches[1]
+              $value = $matches[2]
+              Write-Output "$key: $value"
+            }
+          }
+
+      - name: Close Issue
         uses: peter-evans/close-issue@v3
         with:
           issue-number: ${{ github.event.issue.number }}
-          comment: |
-             processed successfully.
-
-    # - name: Checkout repository
-    #   uses: actions/checkout@v2
-
-    # - name: Extract Season
-    #   id: extract-season
-    #   uses: actions/github-script@v6
-    #   with:
-    #     script: |
-    #       # const issueBody = context.payload.issue.body;
-    #       const issueBody = ${{ github.event.issue.body }};
-    #       const seasonMatch = issueBody.match(/### Season\s+(\w+)/);
-    #       return { season: seasonMatch ? seasonMatch[1] : 'Not specified' };
-    # - name: Set Season
-    #   run: echo "Season:${{ steps.extract-season.outputs.season }}" 
-
-    # - name: Extract Department
-    #   id: extract-department
-    #   uses: actions/github-script@v6
-    #   with:
-    #     script: |
-    #       const issueBody = context.payload.issue.body;
-    #       const departmentMatch = issueBody.match(/### Department\s+(\w+)/);
-    #       return { department: departmentMatch ? departmentMatch[1] : 'Not specified' };
-
-    # - name: Extract ArticleCount
-    #   id: extract-articleCount
-    #   uses: actions/github-script@v6
-    #   with:
-    #     script: |
-    #       const issueBody = context.payload.issue.body;
-    #       const articleCountMatch = issueBody.match(/### ArticleCount\s+(\w+)/);
-    #       return { articleCount: articleCountMatch ? articleCountMatch[1] : 'Not specified' };
-
-    # - name: Extract Promotion
-    #   id: extract-promotion
-    #   uses: actions/github-script@v6
-    #   with:
-    #     script: |
-    #       const issueBody = context.payload.issue.body;
-    #       const promotionMatch = issueBody.match(/### promotion\s+(\w+)/);
-    #       return { promotion: promotionMatch ? promotionMatch[1] : 'Not specified' };
-
-    
-
-    # - name: Set Department
-    #   run: echo "Department:${{ steps.extract-department.outputs.department }}" >> $GITHUB_ENV
-
-    # - name: Set ArticleCount
-    #   run: echo "ArticleCount:${{ steps.extract-articleCount.outputs.articleCount }}" >> $GITHUB_ENV
-
-    # - name: Set Promotion
-    #   run: echo "Promotion:${{ steps.extract-promotion.outputs.promotion }}" >> $GITHUB_ENV
-
-    
-    
+          comment: "This POS API input issue has been automatically processed and closed by a GitHub Actions workflow."

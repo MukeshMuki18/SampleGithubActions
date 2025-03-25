@@ -9,13 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Extract issue details
+    - name: Read and store value
       run: |
-       
-        echo ${{ github.event.issue.body }}
-        # $lines: ${{ github.event.issue.body }} -split '`n'
-        # Write-Output  $lines
-      
+        powershell -command "
+          $string = '### Season`nwwwwwww'
+          $lines = $string -split '`n'
+          $value = $lines[1]
+          Write-Output 'Extracted value: $value'
+        "
     - name: Close the Issue
       uses: peter-evans/close-issue@v3
       with:

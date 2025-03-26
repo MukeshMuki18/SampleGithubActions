@@ -17,6 +17,7 @@ jobs:
       
   process-and-close-issue:
     runs-on: ubuntu-latest
+    needs: [process_issue]
     steps:
       - name: Print issue details
         run: |

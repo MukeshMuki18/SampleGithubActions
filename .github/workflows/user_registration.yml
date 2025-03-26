@@ -6,47 +6,53 @@ on:
 
 jobs:
   extract-fields:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     outputs:
       season: ${{ steps.extract.outputs.season }}
       department: ${{ steps.extract.outputs.department }}
       articleCount: ${{ steps.extract.outputs.articleCount }}
       promotion: ${{ steps.extract.outputs.promotion }}
     steps:
-      - name: Extract issue details using Bash
+      - name: Extract issue details using PowerShell
         id: extract
+        shell: pwsh
         run: |
-          echo "Extracting fields from issue body..."
+          Write-Output "Extracting fields from issue body..."
 
-          ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | tr -d '\r')
+          $inputString = @"
+          ${{ github.event.issue.body }}
+          "@
 
-          # Function to extract values using Bash regex
-          extract_value() {
-              local key="$1"
-              if [[ "$ISSUE_BODY" =~ $key:[[:space:]]*([0-9a-zA-Z_]+) ]]; then
-                  echo "${BASH_REMATCH[1]}"
-              else
-                  echo "N/A"
-              fi
+          # Define regex pattern
+          $pattern = "### (\w+)\s+(.+)"
+          
+          # Create an empty hashtable to store extracted values
+          $values = @{}
+
+          # Use regex to find matches
+          foreach ($match in [regex]::Matches($inputString, $pattern)) {
+              $key = $match.Groups[1].Value  # Extract section name
+              $value = $match.Groups[2].Value  # Extract corresponding value
+              $values[$key] = $value
           }
 
-          SEASON=$(extract_value "Season")
-          DEPARTMENT=$(extract_value "Department")
-          ARTICLE_COUNT=$(extract_value "ArticleCount")
-          PROMOTION=$(extract_value "Promotion")
+          # Extract specific keys
+          $season = $values["Season"]
+          $department = $values["Department"]
+          $articleCount = $values["ArticleCount"]
+          $promotion = $values["Promotion"]
 
-          echo "Extracted values:"
-          echo "Season: $SEASON"
-          echo "Department: $DEPARTMENT"
-          echo "ArticleCount: $ARTICLE_COUNT"
-          echo "Promotion: $PROMOTION"
+          Write-Output "Extracted values:"
+          Write-Output "Season: $season"
+          Write-Output "Department: $department"
+          Write-Output "ArticleCount: $articleCount"
+          Write-Output "Promotion: $promotion"
 
           # Set outputs for next job
-          echo "::set-output name=season::$SEASON"
-          echo "::set-output name=department::$DEPARTMENT"
-          echo "::set-output name=articleCount::$ARTICLE_COUNT"
-          echo "::set-output name=promotion::$PROMOTION"
-
+          echo "::set-output name=season::$season"
+          echo "::set-output name=department::$department"
+          echo "::set-output name=articleCount::$articleCount"
+          echo "::set-output name=promotion::$promotion"
   write-to-file:
     runs-on: pos
     needs: extract-fields

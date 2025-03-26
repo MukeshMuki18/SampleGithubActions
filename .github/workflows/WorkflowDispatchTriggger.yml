@@ -61,7 +61,7 @@ jobs:
     needs: extract-fields
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Create and write issue details to file
         run: |

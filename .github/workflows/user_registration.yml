@@ -18,10 +18,22 @@ jobs:
         run: |
           echo "Extracting fields from issue body..."
           
-          season=$(echo '${{ github.event.issue.body }}' | grep -oP '(?<=Season:\s*)\d+')
-          department=$(echo '${{ github.event.issue.body }}' | grep -oP '(?<=Department:\s*)\d+')
-          articleCount=$(echo '${{ github.event.issue.body }}' | grep -oP '(?<=ArticleCount:\s*)\d+')
-          promotion=$(echo '${{ github.event.issue.body }}' | grep -oP '(?<=promotion:\s*)\d+')
+          ISSUE_BODY="${{ github.event.issue.body }}"
+
+          extract_value() {
+            local key=$1
+            echo "$ISSUE_BODY" | while read -r line; do
+              if [[ "$line" == *"$key"* ]]; then
+                echo "$line" | tr -d '\r' | cut -d '"' -f4 | tr -d ' '
+                break
+              fi
+            done
+          }
+
+          season=$(extract_value "Season")
+          department=$(extract_value "Department")
+          articleCount=$(extract_value "ArticleCount")
+          promotion=$(extract_value "promotion")
 
           echo "Extracted values:"
           echo "Season: $season"

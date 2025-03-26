@@ -1,24 +1,90 @@
+name: Process POS API Issue
+
 on:
-  workflow_dispatch:
-    inputs:
-      PromotionRequired:
-        description: 'Promotion required or not'
-        type: boolean
-        required: true
+  issues:
+    types: [opened]
 
-      Countries:
-        description: 'To check the options'
-        type: choice
-        options:
-        - Sweden
-        - Denmark
-        - UK
-        - US
 jobs:
-  log-the-inputs:
-    runs-on: TestRunnerGithub
+  extract-fields:
+    runs-on: windows-latest
+    outputs:
+      season: ${{ steps.extract.outputs.season }}
+      department: ${{ steps.extract.outputs.department }}
+      articleCount: ${{ steps.extract.outputs.articleCount }}
+      promotion: ${{ steps.extract.outputs.promotion }}
     steps:
-    - run: |
-        echo "PromtionRequired : ${{ github.event.inputs.PromotionRequired }}"
-        echo "Countries: ${{ github.event.inputs.Countries }} "
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
+      - name: Extract issue details using PowerShell
+        id: extract
+        shell: pwsh
+        run: |
+          Write-Output "Extracting fields from issue body..."
+
+          $inputString = @"
+          ${{ github.event.issue.body }}
+          "@
+
+          # Define regex pattern
+          $pattern = "### (\w+)\s+(.+)"
+          # Create an empty hashtable to store extracted values
+          $values = @{}
+
+          # Use regex to find matches
+          foreach ($match in [regex]::Matches($inputString, $pattern)) {
+              $key = $match.Groups[1].Value  # Extract section name
+              $value = $match.Groups[2].Value  # Extract corresponding value
+              $values[$key] = $value
+          }
+
+          # Extract specific keys
+          $season = $values["Season"]
+          $department = $values["Department"]
+          $articleCount = $values["ArticleCount"]
+          $promotion = $values["Promotion"]
+
+          Write-Output "Extracted values:"
+          Write-Output "Season: $season"
+          Write-Output "Department: $department"
+          Write-Output "ArticleCount: $articleCount"
+          Write-Output "Promotion: $promotion"
+
+          # Set outputs for next job
+          echo "season=$season" >> $env:GITHUB_OUTPUT
+          echo "department=$department" >> $env:GITHUB_OUTPUT
+          echo "articleCount=$articleCount" >> $env:GITHUB_OUTPUT
+          echo "promotion=$promotion" >> $env:GITHUB_OUTPUT
+
+  write-to-file:
+    runs-on: ubuntu-latest
+    needs: extract-fields
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create and write issue details to file
+        run: |
+          echo "Season: ${{ needs.extract-fields.outputs.season }}" > issue_output.txt
+          echo "Department: ${{ needs.extract-fields.outputs.department }}" >> issue_output.txt
+          echo "ArticleCount: ${{ needs.extract-fields.outputs.articleCount }}" >> issue_output.txt
+          echo "Promotion: ${{ needs.extract-fields.outputs.promotion }}" >> issue_output.txt
+
+      - name: Upload issue details file
+        uses: actions/upload-artifact@v2
+        with:
+          name: issue_output
+          path: issue_output.txt
+
+  close-issue:
+    runs-on: ubuntu-latest
+    needs: write-to-file
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Close the issue
+        run: |
+          gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }} --reason completed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

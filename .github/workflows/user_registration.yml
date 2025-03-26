@@ -53,10 +53,10 @@ jobs:
           # echo "::set-output name=department::$department"
           # echo "::set-output name=articleCount::$articleCount"
           # echo "::set-output name=promotion::$promotion"
-          echo "{season}={$season}" >> $GITHUB_OUTPUT
-          echo "{department}={$department}" >> $GITHUB_OUTPUT
-          echo "{articleCount}={$articleCount}" >> $GITHUB_OUTPUT
-          echo "{promotion}={$promotion}" >> $GITHUB_OUTPUT
+          echo "{season}={$season}" >> $env:GITHUB_OUTPUT
+          echo "{department}={$department}" >> $env:GITHUB_OUTPUT
+          echo "{articleCount}={$articleCount}" >> $env:GITHUB_OUTPUT
+          echo "{promotion}={$promotion}" >> $env:GITHUB_OUTPUT
   write-to-file:
     # runs-on: pos
     runs-on: ubuntu-latest

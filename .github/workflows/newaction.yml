@@ -31,8 +31,9 @@ jobs:
           Write-Output "ArticleCount: $($fields['ArticleCount'])"
           Write-Output "Promotion: $($fields['promotion'])"
 
-      - name: Close Issue
-        uses: peter-evans/close-issue@v3
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          comment: "This POS API input issue has been automatically processed and closed by a GitHub Actions workflow."
+      - name: Close the issue
+        run: |
+          curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }} \
+               -d '{"state": "closed"}'

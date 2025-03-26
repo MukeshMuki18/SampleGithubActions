@@ -14,23 +14,7 @@ jobs:
       - name: Copy the file to local
         run: |
           copy issue_data.txt "C:\Users\MUKESH\Downloads\issue_data.txt"
-      - name: Extract and Print Issue Fields using PowerShell
-        shell: pwsh
-        run: |
-          $content = Get-Content issue_data.txt
-          
-          $fields = @{}
-          foreach ($line in $content) {
-            if ($line -match '^\*\*(.+?):\*\*\s*(.+)$') {
-              $fields[$matches[1].Trim()] = $matches[2].Trim()
-            }
-          }
-          
-          Write-Output "Season: $($fields['Season'])"
-          Write-Output "Department: $($fields['Department'])"
-          Write-Output "ArticleCount: $($fields['ArticleCount'])"
-          Write-Output "Promotion: $($fields['promotion'])"
-
+      
       - name: Close the issue
         run: |
           curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \

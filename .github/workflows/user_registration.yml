@@ -20,11 +20,12 @@ jobs:
           
           ISSUE_BODY="${{ github.event.issue.body }}"
 
+          # Extract value using Bash pattern matching
           extract_value() {
             local key=$1
             echo "$ISSUE_BODY" | while read -r line; do
               if [[ "$line" == *"$key"* ]]; then
-                echo "$line" | tr -d '\r' | cut -d '"' -f4 | tr -d ' '
+                echo "$line" | cut -d ':' -f2 | tr -d ' "'
                 break
               fi
             done

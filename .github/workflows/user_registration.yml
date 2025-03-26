@@ -49,10 +49,14 @@ jobs:
           Write-Output "Promotion: $promotion"
 
           # Set outputs for next job
-          echo "::set-output name=season::$season"
-          echo "::set-output name=department::$department"
-          echo "::set-output name=articleCount::$articleCount"
-          echo "::set-output name=promotion::$promotion"
+          # echo "::set-output name=season::$season"
+          # echo "::set-output name=department::$department"
+          # echo "::set-output name=articleCount::$articleCount"
+          # echo "::set-output name=promotion::$promotion"
+          echo "{season}={$season}" >> $GITHUB_OUTPUT
+          echo "{department}={$department}" >> $GITHUB_OUTPUT
+          echo "{articleCount}={$articleCount}" >> $GITHUB_OUTPUT
+          echo "{promotion}={$promotion}" >> $GITHUB_OUTPUT
   write-to-file:
     runs-on: pos
     needs: extract-fields
@@ -64,9 +68,9 @@ jobs:
           echo "ArticleCount: ${{ needs.extract-fields.outputs.articleCount }}" >> issue_output.txt
           echo "Promotion: ${{ needs.extract-fields.outputs.promotion }}" >> issue_output.txt
 
-      - name: Copy the file to local
-        run: |
-          copy issue_output.txt "C:\Users\MUKESH\Downloads\issue_output.txt"
+  #     - name: Copy the file to local
+  #       run: |
+  #         copy issue_output.txt "C:\Users\MUKESH\Downloads\issue_output.txt"
   close-issue:
     runs-on: ubuntu-latest
     needs: write-to-file

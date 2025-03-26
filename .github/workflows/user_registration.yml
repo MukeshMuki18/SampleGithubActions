@@ -13,17 +13,17 @@ jobs:
       articleCount: ${{ steps.extract.outputs.articleCount }}
       promotion: ${{ steps.extract.outputs.promotion }}
     steps:
-      - name: Extract issue details using Bash & Regex
+      - name: Extract issue details using Bash
         id: extract
         run: |
           echo "Extracting fields from issue body..."
 
-          ISSUE_BODY="${{ github.event.issue.body }}"
+          ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | tr -d '\r')
 
-          # Function to extract values using regex
+          # Function to extract values using Bash regex
           extract_value() {
               local key="$1"
-              if [[ "$ISSUE_BODY" =~ $key:[[:space:]]*\"?([^\"]+)\"? ]]; then
+              if [[ "$ISSUE_BODY" =~ $key:[[:space:]]*([0-9a-zA-Z_]+) ]]; then
                   echo "${BASH_REMATCH[1]}"
               else
                   echo "N/A"
@@ -33,7 +33,7 @@ jobs:
           SEASON=$(extract_value "Season")
           DEPARTMENT=$(extract_value "Department")
           ARTICLE_COUNT=$(extract_value "ArticleCount")
-          PROMOTION=$(extract_value "promotion")
+          PROMOTION=$(extract_value "Promotion")
 
           echo "Extracted values:"
           echo "Season: $SEASON"
@@ -41,13 +41,7 @@ jobs:
           echo "ArticleCount: $ARTICLE_COUNT"
           echo "Promotion: $PROMOTION"
 
-          # Set environment variables for the next job
-          echo "season=$SEASON" >> $GITHUB_ENV
-          echo "department=$DEPARTMENT" >> $GITHUB_ENV
-          echo "articleCount=$ARTICLE_COUNT" >> $GITHUB_ENV
-          echo "promotion=$PROMOTION" >> $GITHUB_ENV
-
-          # Set outputs for the next job
+          # Set outputs for next job
           echo "::set-output name=season::$SEASON"
           echo "::set-output name=department::$DEPARTMENT"
           echo "::set-output name=articleCount::$ARTICLE_COUNT"

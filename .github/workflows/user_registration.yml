@@ -13,46 +13,45 @@ jobs:
       articleCount: ${{ steps.extract.outputs.articleCount }}
       promotion: ${{ steps.extract.outputs.promotion }}
     steps:
-      - name: Extract issue details
+      - name: Extract issue details using Bash & Regex
         id: extract
         run: |
           echo "Extracting fields from issue body..."
-          
+
           ISSUE_BODY="${{ github.event.issue.body }}"
 
-          # Extract value using Bash pattern matching
+          # Function to extract values using regex
           extract_value() {
-            local key=$1
-            echo "$ISSUE_BODY" | while read -r line; do
-              if [[ "$line" == *"$key"* ]]; then
-                echo "$line" | cut -d ':' -f2 | tr -d ' "'
-                break
+              local key="$1"
+              if [[ "$ISSUE_BODY" =~ $key:[[:space:]]*\"?([^\"]+)\"? ]]; then
+                  echo "${BASH_REMATCH[1]}"
+              else
+                  echo "N/A"
               fi
-            done
           }
 
-          season=$(extract_value "Season")
-          department=$(extract_value "Department")
-          articleCount=$(extract_value "ArticleCount")
-          promotion=$(extract_value "promotion")
+          SEASON=$(extract_value "Season")
+          DEPARTMENT=$(extract_value "Department")
+          ARTICLE_COUNT=$(extract_value "ArticleCount")
+          PROMOTION=$(extract_value "promotion")
 
           echo "Extracted values:"
-          echo "Season: $season"
-          echo "Department: $department"
-          echo "ArticleCount: $articleCount"
-          echo "Promotion: $promotion"
+          echo "Season: $SEASON"
+          echo "Department: $DEPARTMENT"
+          echo "ArticleCount: $ARTICLE_COUNT"
+          echo "Promotion: $PROMOTION"
 
-          # Set environment variables for next job
-          echo "season=$season" >> $GITHUB_ENV
-          echo "department=$department" >> $GITHUB_ENV
-          echo "articleCount=$articleCount" >> $GITHUB_ENV
-          echo "promotion=$promotion" >> $GITHUB_ENV
-          
+          # Set environment variables for the next job
+          echo "season=$SEASON" >> $GITHUB_ENV
+          echo "department=$DEPARTMENT" >> $GITHUB_ENV
+          echo "articleCount=$ARTICLE_COUNT" >> $GITHUB_ENV
+          echo "promotion=$PROMOTION" >> $GITHUB_ENV
+
           # Set outputs for the next job
-          echo "::set-output name=season::$season"
-          echo "::set-output name=department::$department"
-          echo "::set-output name=articleCount::$articleCount"
-          echo "::set-output name=promotion::$promotion"
+          echo "::set-output name=season::$SEASON"
+          echo "::set-output name=department::$DEPARTMENT"
+          echo "::set-output name=articleCount::$ARTICLE_COUNT"
+          echo "::set-output name=promotion::$PROMOTION"
 
   write-to-file:
     runs-on: pos

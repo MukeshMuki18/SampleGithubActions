@@ -70,11 +70,6 @@ jobs:
           echo "ArticleCount: ${{ needs.extract-fields.outputs.articleCount }}" >> issue_output.txt
           echo "Promotion: ${{ needs.extract-fields.outputs.promotion }}" >> issue_output.txt
 
-      - name: Upload issue details file
-        uses: actions/upload-artifact@v2
-        with:
-          name: issue_output
-          path: issue_output.txt
 
   close-issue:
     runs-on: ubuntu-latest

@@ -31,6 +31,7 @@ jobs:
               $template = "UNKNOWN"
           }
 
+          Write-Output "${{ needs.identify-template.outputs.template_name }}"
           Write-Output "Detected template: $template"
           "template_name=$template" | Out-File -FilePath $env:GITHUB_ENV -Append
           Write-Output "${{ steps.identify.outputs.template_name }}"

@@ -1,37 +1,47 @@
-name: Multiple execution
-
+name: Multiple Execution
 on:
   issues:
     types: [opened]
 
-
 jobs:
   identify-template:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     outputs:
-      template_name: ${{ steps.identify.outputs.template_name }}
+      template_name: ${{ steps.extract-template.outputs.template_name }}
     steps:
-      - name: Identify Issue Template
-        id: identify
-        shell: pwsh
+      - name: Extract Issue Template Name
+        id: extract-template
         run: |
-          $issue_title = "${{ github.event.issue.title }}"
-          
-          # Define known templates
-          if ($issue_title -match "\[POS API Input\]") {
-              $template = "POS_API_INPUT"
-          }
-          elseif ($issue_title -match "\[Bug Report\]") {
-              $template = "BUG_REPORT"
-          }
-          elseif ($issue_title -match "\[Feature Request\]") {
-              $template = "FEATURE_REQUEST"
-          }
-          else {
-              $template = "UNKNOWN"
-          }
+          TEMPLATE_NAME=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=### Template: )\w+')
+          if [[ -z "$TEMPLATE_NAME" ]]; then
+            TEMPLATE_NAME="UNKNOWN"
+          fi
+          echo "Detected template: $TEMPLATE_NAME"
+          echo "template_name=$TEMPLATE_NAME" >> "$GITHUB_OUTPUT"
 
-          Write-Output "${{ needs.identify-template.outputs.template_name }}"
-          Write-Output "Detected template: $template"
-          "template_name=$template" | Out-File -FilePath $env:GITHUB_ENV -Append
-          Write-Output "${{ steps.identify.outputs.template_name }}"
+  process-pos-api-input:
+    runs-on: ubuntu-latest
+    needs: identify-template
+    if: needs.identify-template.outputs.template_name == 'POS_API_INPUT'
+    steps:
+      - name: Extract POS API Input fields
+        run: |
+          echo "Processing POS API Input Template..."
+
+  process-bug-report:
+    runs-on: ubuntu-latest
+    needs: identify-template
+    if: needs.identify-template.outputs.template_name == 'BUG_REPORT'
+    steps:
+      - name: Process Bug Report
+        run: |
+          echo "Processing Bug Report Template..."
+
+  process-feature-request:
+    runs-on: ubuntu-latest
+    needs: identify-template
+    if: needs.identify-template.outputs.template_name == 'FEATURE_REQUEST'
+    steps:
+      - name: Process Feature Request
+        run: |
+          echo "Processing Feature Request Template..."

@@ -2,56 +2,136 @@ name: Multiple Execution
 
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
 
 jobs:
   identify-template:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     outputs:
-      template_name: ${{ steps.extract-template.outputs.template_name }}
+      template_name: ${{ steps.identify.outputs.template_name }}
     steps:
-      - name: Extract Issue Template Name
-        id: extract-template
+      - name: Identify Issue Template
+        id: identify
+        shell: pwsh
         run: |
-          TEMPLATE_NAME="UNKNOWN"
-          LABELS=$(echo '${{ toJson(github.event.issue.labels) }}' | jq -r '.[].name')
+          $issue_title = "${{ github.event.issue.title }}"
           
-          for label in $LABELS; do
-            if [[ "$label" == "pos-api-input" ]]; then
-              TEMPLATE_NAME="POS_API_INPUT"
-            elif [[ "$label" == "bug-report" ]]; then
-              TEMPLATE_NAME="BUG_REPORT"
-            elif [[ "$label" == "feature-request" ]]; then
-              TEMPLATE_NAME="FEATURE_REQUEST"
-            fi
-          done
-          
-          echo "Detected template: $TEMPLATE_NAME"
-          echo "template_name=$TEMPLATE_NAME" >> "$GITHUB_OUTPUT"
+          # Define known templates
+          if ($issue_title -match "\[POS API Input\]") {
+              $template = "POS_API_INPUT"
+          }
+          elseif ($issue_title -match "\[Bug Report\]") {
+              $template = "BUG_REPORT"
+          }
+          elseif ($issue_title -match "\[Feature Request\]") {
+              $template = "FEATURE_REQUEST"
+          }
+          else {
+              $template = "UNKNOWN"
+          }
+
+          Write-Output "Detected template: $template"
+          "template_name=$template" | Out-File -FilePath $env:GITHUB_ENV -Append
 
   process-pos-api-input:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: identify-template
     if: needs.identify-template.outputs.template_name == 'POS_API_INPUT'
+    outputs:
+      season: ${{ steps.extract.outputs.season }}
+      department: ${{ steps.extract.outputs.department }}
+      articleCount: ${{ steps.extract.outputs.articleCount }}
+      promotion: ${{ steps.extract.outputs.promotion }}
     steps:
       - name: Extract POS API Input fields
+        id: extract
+        shell: pwsh
         run: |
-          echo "Processing POS API Input Template..."
+          Write-Output "Processing POS API Input Template..."
+          
+          $inputString = @"
+          ${{ github.event.issue.body }}
+          "@
+          
+          $pattern = "### (\w+)\s+(.+)"
+          $values = @{}
+
+          foreach ($match in [regex]::Matches($inputString, $pattern)) {
+              $key = $match.Groups[1].Value
+              $value = $match.Groups[2].Value
+              $values[$key] = $value
+          }
+
+          $season = $values["Season"]
+          $department = $values["Department"]
+          $articleCount = $values["ArticleCount"]
+          $promotion = $values["Promotion"]
+
+          Write-Output "Extracted values: Season=$season, Department=$department, ArticleCount=$articleCount, Promotion=$promotion"
+
+          "season=$season" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "department=$department" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "articleCount=$articleCount" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "promotion=$promotion" | Out-File -FilePath $env:GITHUB_ENV -Append
 
   process-bug-report:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: identify-template
     if: needs.identify-template.outputs.template_name == 'BUG_REPORT'
     steps:
-      - name: Process Bug Report
+      - name: Process Bug Report Template
+        shell: pwsh
         run: |
-          echo "Processing Bug Report Template..."
+          Write-Output "Processing Bug Report..."
+          $issue_body = @"
+          ${{ github.event.issue.body }}
+          "@
+          
+          Write-Output "Issue Content:"
+          Write-Output $issue_body
 
   process-feature-request:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: identify-template
     if: needs.identify-template.outputs.template_name == 'FEATURE_REQUEST'
     steps:
-      - name: Process Feature Request
+      - name: Process Feature Request Template
+        shell: pwsh
         run: |
-          echo "Processing Feature Request Template..."
+          Write-Output "Processing Feature Request..."
+          $issue_body = @"
+          ${{ github.event.issue.body }}
+          "@
+          
+          Write-Output "Issue Content:"
+          Write-Output $issue_body
+
+  write-to-file:
+    runs-on: windows-latest
+    needs: process-pos-api-input
+    if: success()
+    steps:
+      - name: Write extracted values to file
+        shell: pwsh
+        run: |
+          $content = @"
+          Season: $env:season
+          Department: $env:department
+          ArticleCount: $env:articleCount
+          Promotion: $env:promotion
+          "@
+          
+          Set-Content -Path extracted_values.txt -Value $content
+          Get-Content extracted_values.txt
+
+  close-issue:
+    runs-on: windows-latest
+    needs: [process-pos-api-input, process-bug-report, process-feature-request, write-to-file]
+    steps:
+      - name: Close the issue using gh CLI
+        shell: pwsh
+        run: |
+          gh issue close ${{ github.event.issue.number }} --reason completed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

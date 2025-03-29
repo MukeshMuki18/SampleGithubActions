@@ -37,9 +37,14 @@ jobs:
   process-pos-api-input:
     runs-on: windows-latest
     needs: identify-template
-    if: needs.identify-template.outputs.template_name == 'POS_API_INPUT'
+    
     steps:
     - name: Extract POS API Input fields
+      if: needs.identify-template.outputs.template_name == 'POS_API_INPUT'
       run: |
         echo "Processing POS API Input Template..."
+    - name: Extract user registration inputs
+      if: needs.identify-template.outputs.template_name == 'USER_REGISTRATION'
+      run: |
+        echo "Processing user registeration Template..."
         

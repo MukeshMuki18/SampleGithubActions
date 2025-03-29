@@ -20,8 +20,8 @@ jobs:
           if ($issue_title -match "\[POS API Input\]") {
               $template = "POS_API_INPUT"
           }
-          elseif ($issue_title -match "\[Bug Report\]") {
-              $template = "BUG_REPORT"
+          elseif ($issue_title -match "\[User Registration\]") {
+              $template = "USER_REGISTRATION"
           }
           elseif ($issue_title -match "\[Feature Request\]") {
               $template = "FEATURE_REQUEST"

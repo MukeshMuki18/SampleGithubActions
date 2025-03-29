@@ -32,4 +32,5 @@ jobs:
           }
 
           Write-Output "Detected template: $template"
+          Write-Output ${{ steps.identify.outputs.template_name }}
           "template_name=$template" | Out-File -FilePath $env:GITHUB_ENV -Append

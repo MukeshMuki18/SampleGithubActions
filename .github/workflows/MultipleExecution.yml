@@ -1,4 +1,5 @@
 name: Multiple Execution
+
 on:
   issues:
     types: [opened]
@@ -13,15 +14,18 @@ jobs:
         id: extract-template
         run: |
           TEMPLATE_NAME="UNKNOWN"
-          for label in "${{ toJson(github.event.issue.labels) }}" ; do
-            if [[ "$label" == *"pos-api-input"* ]]; then
+          LABELS=$(echo '${{ toJson(github.event.issue.labels) }}' | jq -r '.[].name')
+          
+          for label in $LABELS; do
+            if [[ "$label" == "pos-api-input" ]]; then
               TEMPLATE_NAME="POS_API_INPUT"
-            elif [[ "$label" == *"bug-report"* ]]; then
+            elif [[ "$label" == "bug-report" ]]; then
               TEMPLATE_NAME="BUG_REPORT"
-            elif [[ "$label" == *"feature-request"* ]]; then
+            elif [[ "$label" == "feature-request" ]]; then
               TEMPLATE_NAME="FEATURE_REQUEST"
             fi
           done
+          
           echo "Detected template: $TEMPLATE_NAME"
           echo "template_name=$TEMPLATE_NAME" >> "$GITHUB_OUTPUT"
 
@@ -51,4 +55,3 @@ jobs:
       - name: Process Feature Request
         run: |
           echo "Processing Feature Request Template..."
-

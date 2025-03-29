@@ -1,0 +1,35 @@
+name: Multiple execution
+
+on:
+  issues:
+    types: [opened]
+
+
+jobs:
+  identify-template:
+    runs-on: windows-latest
+    outputs:
+      template_name: ${{ steps.identify.outputs.template_name }}
+    steps:
+      - name: Identify Issue Template
+        id: identify
+        shell: pwsh
+        run: |
+          $issue_title = "${{ github.event.issue.title }}"
+          
+          # Define known templates
+          if ($issue_title -match "\[POS API Input\]") {
+              $template = "POS_API_INPUT"
+          }
+          elseif ($issue_title -match "\[Bug Report\]") {
+              $template = "BUG_REPORT"
+          }
+          elseif ($issue_title -match "\[Feature Request\]") {
+              $template = "FEATURE_REQUEST"
+          }
+          else {
+              $template = "UNKNOWN"
+          }
+
+          Write-Output "Detected template: $template"
+          "template_name=$template" | Out-File -FilePath $env:GITHUB_ENV -Append

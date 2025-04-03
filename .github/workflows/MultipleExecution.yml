@@ -15,7 +15,7 @@ jobs:
         shell: pwsh
         run: |
           $issue_title = "${{ github.event.issue.title }}"
-          if (${{ github.event.issue.body }} | grep -q "POS ISSUE TEMPLATE"){
+          if ("${{ github.event.issue.body }}" | grep -q "POS ISSUE TEMPLATE"){
              echo "Found the Value"
              Write-Output "Found the value"
           };

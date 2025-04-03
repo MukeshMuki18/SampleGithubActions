@@ -15,7 +15,7 @@ jobs:
         shell: pwsh
         run: |
           $issue_title = "${{ github.event.issue.title }}"
-          if echo "${{ github.event.issue.body }}" | grep -q "POS API TEMPLATE";
+          if echo "${{ github.event.issue.body }}" | grep -q "POS ISSUE TEMPLATE";
           # Define known templates
           if ($issue_title -match "\[POS API Input\]") {
               $template = "POS_API_INPUT"

@@ -44,7 +44,7 @@ body:
   - type: dropdown
     id: template
     attributes:
-      label: ""
+      label: "This is not part of input"
       options:
          - "POS ISSUE TEMPLATE"
     validations:

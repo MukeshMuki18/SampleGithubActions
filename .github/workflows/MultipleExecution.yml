@@ -15,7 +15,7 @@ jobs:
         shell: pwsh
         run: |
           $issue_title = "${{ github.event.issue.title }}"
-          
+          $issue_name = "${{ github.event.issue.name }}"
           # Define known templates
           if ($issue_title -match "\[POS API Input\]") {
               $template = "POS_API_INPUT"
@@ -31,7 +31,7 @@ jobs:
           }
 
           Write-Output "Detected template: $template"
-
+          Write-Output "Issue Name: $issue_name"
           # Correctly set output for GitHub Actions
           echo "template_name=$template" >> $env:GITHUB_OUTPUT
   process-pos-api-input:

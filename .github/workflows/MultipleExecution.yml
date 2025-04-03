@@ -16,9 +16,10 @@ jobs:
         run: |
           $issue_title = "${{ github.event.issue.title }}"
           $issue_body = "${{ github.event.issue.body }}"
-          if ($issue_body | grep -q "POS ISSUE TEMPLATE"){
+          if ($issue_body -match "POS ISSUE TEMPLATE"){
              echo "Found the Value"
              Write-Output "Found the value"
+             $template1 = "POS_API_template"
           };
           
           # Define known templates
@@ -37,6 +38,7 @@ jobs:
 
           Write-Output "Detected template: $template"
           Write-Output "Issue Name: $issue_name"
+          Write-Output "TemplateName: $template1"
           # Correctly set output for GitHub Actions
           echo "template_name=$template" >> $env:GITHUB_OUTPUT
   process-pos-api-input:

@@ -1,6 +1,8 @@
 
 <!-- POS Input Template -->
-<!-- POS Inputs -->
+<!-- TEMPLATE: POS Inputs -->
+*** This is template is to get the inputs from user for the POS API *** 
+
 name: "POS API input"
 description: "Issue to trigger the API"
 title: "[POS API Input] - "

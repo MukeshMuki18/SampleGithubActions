@@ -44,6 +44,7 @@ body:
   - type: dropdown
     id: template
     attributes:
+      label: ""
       options:
          - "POS ISSUE TEMPLATE"
     validations:

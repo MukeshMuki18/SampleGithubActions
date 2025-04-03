@@ -1,3 +1,5 @@
+
+<!-- TEMPLATE: POS Input Template -->
 name: "POS API input"
 description: "Issue to trigger the API"
 title: "[POS API Input] - "

@@ -1,0 +1,59 @@
+name: Blank Issue Trigger
+on:
+   issues:
+     types: [opened]
+ 
+jobs:
+  extract-fields-for-input:
+    runs-on: windows-latest
+    outputs:
+      eventId: ${{ steps.extract.outputs.eventId }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Extract issue details using PowerShell
+        id: extract
+        shell: pwsh
+        run: |
+          # Write-Output "Extracting fields from issue body..."
+          $inputString = @"
+          ${{ github.event.issue.body }}
+          "@
+
+          # $value = $inputString -match 'EventId: "(.*?)"' | Out-Null
+          # $matches[0]
+          $eventId1 = $inputString -match 'EventId: "(.*?)"' | Out-Null
+          $eventId = $matches[0].Replace("EventId: ","")
+          Write-Output $eventId
+          echo 'eventId=$eventId' >> $env:GITHUB_OUTPUT
+ 
+  write-inputs-in-sharepoint:
+    runs-on: windows-latest
+    needs: extract-fields-for-input
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Extract issue body
+        id: extract_body
+        run: echo "${{ github.event.issue.body }}" > issue_body.txt
+      - name: Copy the file to local
+        run: |
+          copy issue_body.txt "C:\Users\MUSEL\H & M HENNES & MAURITZ GBC AB\ECT - Community of Practice - ECT_Automation_Artifacts - ECT_Automation_Artifacts\test\issue_body.txt"
+      - name: Run Tosca Execution Client
+        run: |
+          write-host '[${{ needs.extract-fields-for-input.outputs.eventId }}]'
+          write-host '[$eventId]'
+          write-host '["$eventId"]'
+  close-issue:
+    runs-on: ubuntu-latest
+    needs: write-inputs-in-sharepoint
+    permissions:
+      issues: write
+ 
+    steps:
+    - name: Close
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        ISSUE: ${{ github.event.issue.number }}
+      run: gh issue close --repo "$REPO" --comment "Autoclosing issue $ISSUE" "$ISSUE"

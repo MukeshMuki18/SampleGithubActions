@@ -36,9 +36,9 @@ jobs:
       - name: Extract issue body
         id: extract_body
         run: echo "${{ github.event.issue.body }}" > issue_body.txt
-      - name: Copy the file to local
-        run: |
-          copy issue_body.txt "C:\Users\MUSEL\H & M HENNES & MAURITZ GBC AB\ECT - Community of Practice - ECT_Automation_Artifacts - ECT_Automation_Artifacts\test\issue_body.txt"
+      # - name: Copy the file to local
+      #   run: |
+      #     copy issue_body.txt "C:\Users\MUSEL\H & M HENNES & MAURITZ GBC AB\ECT - Community of Practice - ECT_Automation_Artifacts - ECT_Automation_Artifacts\test\issue_body.txt"
       - name: Run Tosca Execution Client
         run: |
           write-host '[${{ needs.extract-fields-for-input.outputs.eventId }}]'

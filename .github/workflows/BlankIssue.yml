@@ -42,6 +42,7 @@ jobs:
         run: |
           $eventId = '${{ needs.extract-fields-for-input.outputs.eventId }}'
           Write-Host "[$eventId]"
+          Write-Host '[$eventId]'
           Write-Host '["$eventId"]'
  
   close-issue:

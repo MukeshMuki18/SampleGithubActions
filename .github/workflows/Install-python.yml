@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-environment:
+  download-packages:
     runs-on: self-hosted
 
     steps:
@@ -26,6 +26,15 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" -OutFile "python-3.8.5.exe"
 
+      - name: Download Git Installer
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "$env:GIT_INSTALLER_URL" -OutFile "git-installer.exe"
+
+  Install-python:
+    runs-on: self-hosted
+    needs: download-packages
+    steps:
       - name: Install Python to Custom Folder
         shell: powershell
         run: |
@@ -56,11 +65,10 @@ jobs:
       ##############################################
       ## Install Git 2.46.0.windows.1
       ##############################################
-      - name: Download Git Installer
-        shell: powershell
-        run: |
-          Invoke-WebRequest -Uri "$env:GIT_INSTALLER_URL" -OutFile "git-installer.exe"
-
+  Install-Git:
+    runs-on: self-hosted
+    needs: download-packages
+    steps:
       - name: Install Git Silently
         shell: powershell
         run: |

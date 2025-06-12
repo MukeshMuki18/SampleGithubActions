@@ -5,7 +5,7 @@ on:
 
 jobs:
   install-python:
-    runs-on: LAPTOP-6J9P03GU
+    runs-on: self-hosted
 
     steps:
       - name: Show current USERPROFILE

@@ -1,23 +1,26 @@
-name: Install Python 3.8.5 on Self-Hosted Windows Runner
+name: Install Python and Git on Self-Hosted Windows Runner
 
 on:
   workflow_dispatch:
 
 jobs:
-  install-python:
+  setup-environment:
     runs-on: self-hosted
 
     steps:
       - name: Print USERPROFILE
         shell: powershell
-        run: echo "User profile path = $env:USERPROFILE"
+        run: echo "User profile path= $env:USERPROFILE"
 
-      - name: Define Python install path
+      - name: Define install paths
         shell: powershell
         run: |
-          $installDir = "$env:USERPROFILE\AppData\Local\Programs\Python385"
-          echo "PYTHON_INSTALL_DIR=$installDir" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "PYTHON_INSTALL_DIR=$env:USERPROFILE\AppData\Local\Programs\Python385" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "GIT_INSTALLER_URL=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0.1-64-bit.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
+      ##############################################
+      ## Install Python 3.8.5
+      ##############################################
       - name: Download Python 3.8.5 Installer
         shell: powershell
         run: |
@@ -27,9 +30,9 @@ jobs:
         shell: powershell
         run: |
           $installer = "$PWD\python-3.8.5.exe"
-          & $installer /quiet InstallAllUsers=0 TargetDir="$env:USERPROFILE\AppData\Local\Programs\Python385"
+          & $installer /quiet InstallAllUsers=0 Include_pip=1 TargetDir="$env:USERPROFILE\AppData\Local\Programs\Python385"
 
-      - name: Add Python and Scripts to PATH (non-destructive)
+      - name: Add Python to user PATH (non-destructive)
         shell: powershell
         run: |
           $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -44,8 +47,42 @@ jobs:
             Write-Output "Python directories already exist in PATH."
           }
 
-      - name: Reload PATH and Verify Python Installation
+      - name: Verify Python installation
         shell: powershell
         run: |
-          $env:Path = [Environment]::GetEnvironmentVariable("Path", "User")
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "User")
           & "$env:USERPROFILE\AppData\Local\Programs\Python385\python.exe" --version
+
+      ##############################################
+      ## Install Git 2.46.0.windows.1
+      ##############################################
+      - name: Download Git Installer
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "$env:GIT_INSTALLER_URL" -OutFile "git-installer.exe"
+
+      - name: Install Git Silently
+        shell: powershell
+        run: |
+          $installer = "$PWD\git-installer.exe"
+          & $installer /SILENT
+
+      - name: Verify Git installation
+        shell: powershell
+        run: |
+          & git --version
+
+      ##############################################
+      ## Clone Repository to Documents
+      ##############################################
+      - name: Clone Repository to Documents Folder
+        shell: powershell
+        run: |
+          $repoURL = "https://github.com/MukeshMuki18/SampleGithubActions.git"  # Change this to your repo
+          $clonePath = "$env:USERPROFILE\Documents\git-repo"
+          if (!(Test-Path $clonePath)) {
+            git clone $repoURL $clonePath
+            Write-Output "Cloned to $clonePath"
+          } else {
+            Write-Output "Repo already exists in Documents folder."
+          }

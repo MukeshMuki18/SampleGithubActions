@@ -1,0 +1,44 @@
+name: Install Python 3.8.5 on Self-Hosted Windows Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  install-python:
+    runs-on: [self-hosted, windows]
+
+    steps:
+      - name: Show current USERPROFILE
+        run: echo "%USERPROFILE%"
+
+      - name: Set install path environment variable
+        run: |
+          echo "PYTHON_INSTALL_DIR=%USERPROFILE%\AppData\Local\Programs\Python385" >> %GITHUB_ENV%
+
+      - name: Download Python 3.8.5 Installer
+        run: |
+          curl -L -o python-3.8.5.exe https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe
+
+      - name: Install Python Silently to Custom Folder
+        run: |
+          python-3.8.5.exe /quiet InstallAllUsers=0 TargetDir="%USERPROFILE%\AppData\Local\Programs\Python385"
+
+      - name: Add Python to user PATH (non-destructive)
+        run: |
+          $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+          $pythonDir = "$env:USERPROFILE\AppData\Local\Programs\Python385"
+          $scriptsDir = "$pythonDir\Scripts"
+          
+          if ($userPath -notlike "*$pythonDir*") {
+            $newPath = "$userPath;$pythonDir;$scriptsDir"
+            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+            Write-Output "Updated PATH successfully."
+          } else {
+            Write-Output "Python path already exists in PATH. Skipping update."
+          }
+
+      - name: Reload environment and verify Python version
+        shell: powershell
+        run: |
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "User")
+          & "$env:USERPROFILE\AppData\Local\Programs\Python385\python.exe" --version

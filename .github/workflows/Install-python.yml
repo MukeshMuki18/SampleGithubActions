@@ -8,38 +8,44 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Show current USERPROFILE
-        run: echo "%USERPROFILE%"
+      - name: Print USERPROFILE
+        shell: powershell
+        run: echo "User profile path = $env:USERPROFILE"
 
-      - name: Set install path environment variable
+      - name: Define Python install path
+        shell: powershell
         run: |
-          echo "PYTHON_INSTALL_DIR=%USERPROFILE%\AppData\Local\Programs\Python385" >> %GITHUB_ENV%
+          $installDir = "$env:USERPROFILE\AppData\Local\Programs\Python385"
+          echo "PYTHON_INSTALL_DIR=$installDir" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Download Python 3.8.5 Installer
         shell: powershell
         run: |
           Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" -OutFile "python-3.8.5.exe"
 
-      - name: Install Python Silently to Custom Folder
-        run: |
-          python-3.8.5.exe /quiet InstallAllUsers=0 TargetDir="%USERPROFILE%\AppData\Local\Programs\Python385"
-
-      - name: Add Python to user PATH (non-destructive)
-        run: |
-          $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-          $pythonDir = "$env:USERPROFILE\AppData\Local\Programs\Python385"
-          $scriptsDir = "$pythonDir\Scripts"
-          
-          if ($userPath -notlike "*$pythonDir*") {
-            $newPath = "$userPath;$pythonDir;$scriptsDir"
-            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
-            Write-Output "Updated PATH successfully."
-          } else {
-            Write-Output "Python path already exists in PATH. Skipping update."
-          }
-
-      - name: Reload environment and verify Python version
+      - name: Install Python to Custom Folder
         shell: powershell
         run: |
-          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "User")
+          $installer = "$PWD\python-3.8.5.exe"
+          & $installer /quiet InstallAllUsers=0 TargetDir="$env:USERPROFILE\AppData\Local\Programs\Python385"
+
+      - name: Add Python and Scripts to PATH (non-destructive)
+        shell: powershell
+        run: |
+          $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+          $pythonPath = "$env:USERPROFILE\AppData\Local\Programs\Python385"
+          $scriptsPath = "$pythonPath\Scripts"
+
+          if ($userPath -notlike "*$pythonPath*") {
+            $newPath = "$userPath;$pythonPath;$scriptsPath"
+            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+            Write-Output "Updated user PATH with Python directories."
+          } else {
+            Write-Output "Python directories already exist in PATH."
+          }
+
+      - name: Reload PATH and Verify Python Installation
+        shell: powershell
+        run: |
+          $env:Path = [Environment]::GetEnvironmentVariable("Path", "User")
           & "$env:USERPROFILE\AppData\Local\Programs\Python385\python.exe" --version

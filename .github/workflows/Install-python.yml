@@ -16,7 +16,7 @@ jobs:
         shell: powershell
         run: |
           echo "PYTHON_INSTALL_DIR=$env:USERPROFILE\AppData\Local\Programs\Python385" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "GIT_INSTALLER_URL=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0.1-64-bit.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "GIT_INSTALLER_URL=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       ##############################################
       ## Install Python 3.8.5

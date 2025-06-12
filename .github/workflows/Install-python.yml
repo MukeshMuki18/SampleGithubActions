@@ -16,8 +16,9 @@ jobs:
           echo "PYTHON_INSTALL_DIR=%USERPROFILE%\AppData\Local\Programs\Python385" >> %GITHUB_ENV%
 
       - name: Download Python 3.8.5 Installer
+        shell: powershell
         run: |
-          curl -L -o python-3.8.5.exe https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe
+          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" -OutFile "python-3.8.5.exe"
 
       - name: Install Python Silently to Custom Folder
         run: |

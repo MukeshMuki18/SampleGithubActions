@@ -6,17 +6,25 @@ on:
 jobs:
   setup-data:
     runs-on: self-hosted
-
+    outputs:
+      git_installer_url: ${{ steps.setvars.outputs.git_installer_url }}
+      python_installer_url: ${{ steps.setvars.outputs.python_installer_url }}
     steps:
+      - name: Set Git URL
+        id: setvars
+        run: |
+          $git_installer_url="https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" >> $env:GITHUB_OUTPUT
+          $python_installer_url = "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" >> $env:GITHUB_OUTPUT
+        
       - name: Print USERPROFILE
         shell: powershell
         run: echo "User profile path= $env:USERPROFILE"
 
-      - name: Define install paths
-        shell: powershell
-        run: |
-          echo "PYTHON_INSTALL_DIR=$env:USERPROFILE\AppData\Local\Programs\Python385" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "GIT_INSTALLER_URL=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+      # - name: Define install paths
+      #   shell: powershell
+      #   run: |
+      #     echo "PYTHON_INSTALL_DIR=$env:USERPROFILE\AppData\Local\Programs\Python385" | Out-File -FilePath $env:GITHUB_ENV -Append
+      #     echo "GIT_INSTALLER_URL=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       ##############################################
       ## Install Python 3.8.5
@@ -32,7 +40,7 @@ jobs:
       - name: Download Python 3.8.5 Installer
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" -OutFile "python-3.8.5.exe"
+          Invoke-WebRequest -Uri "${{ needs.setup-data.outputs.python_installer_url }}" -OutFile "python-3.8.5.exe"
       - name: Install Python to Custom Folder
         shell: powershell
         run: |
@@ -70,7 +78,7 @@ jobs:
       - name: Download Git Installer
         shell: powershell
         run: |
-          $git_url = "${{ needs.setup-data.outputs.GIT_INSTALLER_URL }}"
+          $git_url = "${{ needs.setup-data.outputs.git_installer_url }}"
           Invoke-WebRequest -Uri $git_url -OutFile "git-installer.exe"
       - name: Install Git Silently
         shell: powershell

@@ -122,3 +122,38 @@ jobs:
           } else {
             Write-Output "Repo already exists in Documents folder."
           }
+  Install-VSCode:
+    runs-on: self-hosted
+    needs: setup-data
+    steps:
+      - name: Download VS Code Installer (System Installer)
+        shell: powershell
+        run: |
+          $vscodeUrl = "https://update.code.visualstudio.com/latest/win32-x64-user/stable"
+          Invoke-WebRequest -Uri $vscodeUrl -OutFile "VSCodeSetup.exe"
+
+      - name: Install VS Code Silently
+        shell: powershell
+        run: |
+          $installer = "$PWD\VSCodeSetup.exe"
+          Start-Process -FilePath $installer -ArgumentList '/silent', '/mergetasks=!runcode' -Wait
+
+      - name: Add VS Code to user PATH (optional)
+        shell: powershell
+        run: |
+          $vscodeBin = "$env:USERPROFILE\AppData\Local\Programs\Microsoft VS Code\bin"
+          $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+          if ($userPath -notlike "*$vscodeBin*") {
+            $newPath = "$userPath;$vscodeBin"
+            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+            Write-Output "Added VS Code to user PATH."
+          } else {
+            Write-Output "VS Code already exists in user PATH."
+          }
+
+      - name: Verify VS Code Installation
+        shell: powershell
+        run: |
+          $env:Path = [Environment]::GetEnvironmentVariable("Path", "User")
+          code --version
+

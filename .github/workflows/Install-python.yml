@@ -71,41 +71,41 @@ jobs:
       ##############################################
       ## Install Git 2.46.0.windows.1
       ##############################################
-Install-Git:
-  runs-on: self-hosted
-  needs: setup-data
-  steps:
-    - name: Download Git Installer
-      shell: powershell
-      run: |
-        $git_url = "${{ needs.setup-data.outputs.git_installer_url }}"
-        Invoke-WebRequest -Uri $git_url -OutFile "git-installer.exe"
+  Install-Git:
+    runs-on: self-hosted
+    needs: setup-data
+    steps:
+      - name: Download Git Installer
+        shell: powershell
+        run: |
+          $git_url = "${{ needs.setup-data.outputs.git_installer_url }}"
+          Invoke-WebRequest -Uri $git_url -OutFile "git-installer.exe"
 
-    - name: Install Git to C:\Program Files\Git
-      shell: powershell
-      run: |
-        $installer = "$PWD\git-installer.exe"
-        Start-Process -FilePath $installer -ArgumentList '/SILENT', '/DIR="C:\Program Files\Git"' -Wait
+      - name: Install Git to C:\Program Files\Git
+        shell: powershell
+        run: |
+          $installer = "$PWD\git-installer.exe"
+          Start-Process -FilePath $installer -ArgumentList '/SILENT', '/DIR="C:\Program Files\Git"' -Wait
 
-    - name: Add Git bin path to **user** PATH (non-destructive)
-      shell: powershell
-      run: |
-        $gitBin = 'C:\Program Files\Git\bin'
-        $currentUserPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+      - name: Add Git bin path to **user** PATH (non-destructive)
+        shell: powershell
+        run: |
+          $gitBin = 'C:\Program Files\Git\bin'
+          $currentUserPath = [Environment]::GetEnvironmentVariable('Path', 'User')
 
-        if ($currentUserPath -notlike "*$gitBin*") {
-          $newUserPath = "$currentUserPath;$gitBin"
-          [Environment]::SetEnvironmentVariable('Path', $newUserPath, 'User')
-          Write-Output "Git bin path added to user PATH."
-        } else {
-          Write-Output "Git bin path already exists in user PATH."
-        }
+          if ($currentUserPath -notlike "*$gitBin*") {
+            $newUserPath = "$currentUserPath;$gitBin"
+            [Environment]::SetEnvironmentVariable('Path', $newUserPath, 'User')
+            Write-Output "Git bin path added to user PATH."
+          } else {
+            Write-Output "Git bin path already exists in user PATH."
+          }
 
-    - name: Refresh shell and verify Git installation
-      shell: powershell
-      run: |
-        $env:Path = [Environment]::GetEnvironmentVariable('Path', 'User')
-        git --version
+      - name: Refresh shell and verify Git installation
+        shell: powershell
+        run: |
+          $env:Path = [Environment]::GetEnvironmentVariable('Path', 'User')
+          git --version
 
 
       ##############################################

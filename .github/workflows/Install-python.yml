@@ -70,7 +70,7 @@ jobs:
       - name: Download Git Installer
         shell: powershell
         run: |
-          $git_url = "${{ needs.setup-data.outputs.git_url }}"
+          $git_url = "${{ needs.setup-data.outputs.GIT_INSTALLER_URL }}"
           Invoke-WebRequest -Uri $git_url -OutFile "git-installer.exe"
       - name: Install Git Silently
         shell: powershell

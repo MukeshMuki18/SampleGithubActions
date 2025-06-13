@@ -13,8 +13,8 @@ jobs:
       - name: Set Git URL
         id: setvars
         run: |
-          $git_installer_url="https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" >> $env:GITHUB_OUTPUT
-          $python_installer_url = "https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" >> $env:GITHUB_OUTPUT
+          echo "$git_installer_url=https://github.com/git-for-windows/git/releases/download/v2.46.0.windows.1/Git-2.46.0-64-bit.exe" >> $env:GITHUB_OUTPUT
+          echo "$python_installer_url =https://www.python.org/ftp/python/3.8.5/python-3.8.5-amd64.exe" >> $env:GITHUB_OUTPUT
         
       - name: Print USERPROFILE
         shell: powershell

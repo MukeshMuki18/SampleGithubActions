@@ -19,14 +19,16 @@ jobs:
         
       - name: Get issue creator email
         id: author_email
+        shell: bash  # <--- Force Bash shell
         run: |
           email=$(gh api users/${{ github.event.issue.user.login }} --jq '.email')
           if [ -z "$email" ]; then
-            email="${{ github.event.issue.user.login }}@users.noreply.github.com"
+          email="${{ github.event.issue.user.login }}@users.noreply.github.com"
           fi
           echo "EMAIL=$email" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
       - name: Extract issue details using PowerShell
         id: extract
         shell: pwsh

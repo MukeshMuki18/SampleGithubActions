@@ -62,6 +62,7 @@ jobs:
           Write-Output "Department: $department"
           Write-Output "ArticleCount: $articleCount"
           Write-Output "Promotion: $promotion"
+          # Write-Output "Email:$email"
 
           # Set outputs for next job
           echo "season=$season" >> $env:GITHUB_OUTPUT
@@ -83,7 +84,7 @@ jobs:
           echo "Department: ${{ needs.extract-fields.outputs.department }}" >> issue_output.txt
           echo "ArticleCount: ${{ needs.extract-fields.outputs.articleCount }}" >> issue_output.txt
           echo "Promotion: ${{ needs.extract-fields.outputs.promotion }}" >> issue_output.txt
-
+          echo "Email: ${{ needs.author_email.outputs.email }}" >> issue_output.txt
 
   close-issue:
     runs-on: ubuntu-latest

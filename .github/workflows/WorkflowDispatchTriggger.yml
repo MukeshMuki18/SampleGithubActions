@@ -1,8 +1,8 @@
 name: Process POS API Issue
 
 on:
-#   issues:
-#     types: [opened]
+  issues:
+    types: [opened]
 
 jobs:
   extract-fields:
@@ -12,10 +12,21 @@ jobs:
       department: ${{ steps.extract.outputs.department }}
       articleCount: ${{ steps.extract.outputs.articleCount }}
       promotion: ${{ steps.extract.outputs.promotion }}
+      email: ${{ steps.author_email.outputs.email }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+        
+      - name: Get issue creator email
+        id: author_email
+        run: |
+          email=$(gh api users/${{ github.event.issue.user.login }} --jq '.email')
+          if [ -z "$email" ]; then
+            email="${{ github.event.issue.user.login }}@users.noreply.github.com"
+          fi
+          echo "EMAIL=$email" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract issue details using PowerShell
         id: extract
         shell: pwsh
@@ -55,6 +66,7 @@ jobs:
           echo "department=$department" >> $env:GITHUB_OUTPUT
           echo "articleCount=$articleCount" >> $env:GITHUB_OUTPUT
           echo "promotion=$promotion" >> $env:GITHUB_OUTPUT
+          
 
   write-to-file:
     runs-on: ubuntu-latest
